@@ -8,14 +8,14 @@ using System.Net;
 namespace ApiApp.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public partial class AnimalImageTests
     {
         static HttpClient client = new HttpClient();
 
         Action<string> LogInfo = Console.WriteLine;
 
-        [TestInitialize]
-        public void Initialize()
+        [ClassInitialize]
+        public static void AssemblyInitialize(TestContext context)
         {
             //client.BaseAddress = new Uri("http://apiapptest20171126015849.azurewebsites.net/");
             client.BaseAddress = new Uri("http://localhost:63513/");
@@ -41,6 +41,7 @@ namespace ApiApp.Tests
             catch (Exception e)
             {
                 LogInfo(e.Message);
+                throw;
             }
             finally
             {
