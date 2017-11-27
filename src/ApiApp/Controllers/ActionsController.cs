@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Web.Http;
-using Swashbuckle.Swagger.Annotations;
 using ApiApp.Models;
+using Swashbuckle.Swagger.Annotations;
 
 namespace ApiApp.Controllers
 {
