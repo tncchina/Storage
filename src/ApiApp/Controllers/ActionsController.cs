@@ -5,7 +5,7 @@ using Swashbuckle.Swagger.Annotations;
 
 namespace ApiApp.Controllers
 {
-    public class ActionsController : ApiController
+    public class ActionsController : BaseController
     {
         [Route("api/actions/uploadbatch")]
         [HttpPost]
