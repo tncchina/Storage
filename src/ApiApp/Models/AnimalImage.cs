@@ -12,7 +12,13 @@ namespace ApiApp.Models
 
         public string UploadBatchId { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string ImageName { get; set; }
+
+        public string ImageBlob { get; set; }
+
+        public string UploadBlobSASUrl { get; set; }
+
+        public string DownloadBlobSASUrl { get; set; }
 
         // The following is from the original database
         // 文件编号,原始文件编号,文件格式,文件夹编号,相机编号,布设点位编号,相机安装日期,拍摄时间,工作天数,对象类别,物种名称,动物数量,性别,独立探测首张,备注

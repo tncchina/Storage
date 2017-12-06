@@ -56,9 +56,18 @@ namespace ApiApp.Tests
         {
             string content = "";
             HttpResponseMessage response = null;
+            var animal = new AnimalImage
+            {
+                Tag = "my first image",
+                LocationId = "Golden Mokey Area",
+                ImageName = "image0001",
+                FileFormat = "JPG"
+            };
+
+            AnimalImage animalReturned = null;
+
             try
             {
-                var animal = new AnimalImage { Tag = "my first image", LocationId = "Golden Mokey Area" };
                 var stringContent = JsonConvert.SerializeObject(animal);
                 var requestContent = new StringContent(stringContent, Encoding.UTF8, "application/json");
 
@@ -68,8 +77,10 @@ namespace ApiApp.Tests
                     content = await response.Content.ReadAsStringAsync();
                 }
                 Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-                var bloburl = JsonConvert.DeserializeObject<string>(content);
-                Assert.IsNotNull(bloburl);
+                animalReturned = JsonConvert.DeserializeObject<AnimalImage>(content);
+                Assert.IsNotNull(animalReturned.ImageBlob);
+                Assert.IsNotNull(animalReturned.UploadBlobSASUrl);
+                Assert.IsNotNull(animalReturned.Id);
             }
             catch (Exception e)
             {
@@ -80,6 +91,26 @@ namespace ApiApp.Tests
             {
                 LogInfo($"received response status {response.StatusCode}, response content: {content}");
             }
+
+            // now can use the provided UploadBlobSASUrl to upload image
+
+            response = await client.GetAsync($"api/animalimages/{animalReturned.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                content = await response.Content.ReadAsStringAsync();
+                LogInfo($"received response status {response.StatusCode}, response content: {content}");
+            }
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            animalReturned = JsonConvert.DeserializeObject<AnimalImage>(content);
+            Assert.IsNotNull(animalReturned.ImageBlob);
+            Assert.IsNotNull(animalReturned.DownloadBlobSASUrl);
+            Assert.IsNotNull(animalReturned.Id);
+            Assert.AreEqual(animal.Tag, animalReturned.Tag);
+            Assert.AreEqual(animal.LocationId, animalReturned.LocationId);
+            Assert.AreEqual(animal.ImageName, animalReturned.ImageName);
+            Assert.AreNotEqual(animal.FileFormat, animalReturned.FileFormat);
+            Assert.AreEqual(animal.FileFormat.ToLowerInvariant(), animalReturned.FileFormat);
         }
     }
 }

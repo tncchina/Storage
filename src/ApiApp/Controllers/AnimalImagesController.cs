@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using ApiApp.Models;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Swashbuckle.Swagger.Annotations;
+using Microsoft.Azure.Documents.Client;
+using ApiApp.Common;
+using Microsoft.Azure.Documents;
 
 namespace ApiApp.Controllers
 {
@@ -22,32 +25,50 @@ namespace ApiApp.Controllers
         [SwaggerOperation("GetById")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
-        public string Get(int id)
+        public async Task<AnimalImage> Get(string id)
         {
-            return "value";
+            AnimalImage result;
+            var response = await this.AppConfiguration.CosmosDBClient.ReadDocumentAsync(
+                UriFactory.CreateDocumentUri(this.AppConfiguration.DatabaseId, this.AppConfiguration.AnimalImageCollectionId, id),
+                new RequestOptions() { PartitionKey = new PartitionKey(id) });
+
+            result = (AnimalImage)(dynamic)response.Resource;
+
+            CloudBlobClient blobClient = this.AppConfiguration.BlobStorageAccount.CreateCloudBlobClient();
+            CloudBlobContainer container = blobClient.GetContainerReference(this.AppConfiguration.AnimalImageContainer);
+            CloudBlockBlob blockblob = container.GetBlockBlobReference(result.ImageBlob);
+
+            result.DownloadBlobSASUrl = Utils.GenerateReadSasUrl(blockblob);
+
+            return result;
         }
 
         // POST api/values
         [SwaggerOperation("Create")]
         [SwaggerResponse(HttpStatusCode.Created)]
-        public string Post([FromBody]AnimalImage animalImage)
+        public async Task<AnimalImage> Post([FromBody]AnimalImage animalImage)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(this.AppConfiguration.GetStorageConnectionString());
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference("test123");
+            CloudBlobClient blobClient = this.AppConfiguration.BlobStorageAccount.CreateCloudBlobClient();
+            CloudBlobContainer container = blobClient.GetContainerReference(this.AppConfiguration.AnimalImageContainer);
 
             // Create a new container, if it does not exist
             container.CreateIfNotExists();
 
-            CloudBlockBlob blockblob = container.GetBlockBlobReference(animalImage.Id ?? "123");
-            string sas = blockblob.GetSharedAccessSignature(
-                new SharedAccessBlobPolicy
-                {
-                    Permissions = SharedAccessBlobPermissions.Create | SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write,
-                    SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1)
-                });
+            //TODO: validate input
+            animalImage.Id = Guid.NewGuid().ToString().ToLowerInvariant();
+            animalImage.ImageName = animalImage.ImageName.ToLowerInvariant();
+            animalImage.FileFormat = animalImage.FileFormat.ToLowerInvariant();
+            animalImage.ImageBlob = animalImage.Id + "/" + animalImage.ImageName +
+                "." + animalImage.FileFormat;
+            CloudBlockBlob blockblob = container.GetBlockBlobReference(animalImage.ImageBlob);
 
-            return $"sasurl for image{animalImage.Id}'s blob {blockblob.Uri.AbsoluteUri + sas}";
+            await this.AppConfiguration.CosmosDBClient.UpsertDocumentAsync(
+                this.AppConfiguration.AnimalImageCollectionUri,
+                animalImage);
+
+            animalImage.UploadBlobSASUrl = Utils.GenerateWriteSasUrl(blockblob);
+
+            return animalImage;
         }
 
         // PUT api/values/5
