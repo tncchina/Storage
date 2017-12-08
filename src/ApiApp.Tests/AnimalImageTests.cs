@@ -1,13 +1,16 @@
-﻿using System;
+﻿using ApiApp.Models;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Net;
-using ApiApp.Models;
-using Newtonsoft.Json;
 using System.Text;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System.Threading.Tasks;
 
 namespace ApiApp.Tests
 {
@@ -69,8 +72,9 @@ namespace ApiApp.Tests
         }
 
         [TestMethod]
-        public async Task CreateNewAnimalImage()
+        public async Task UploadOneAnimalImage()
         {
+            // upload request
             string content = "";
             HttpResponseMessage response = null;
             var animal = new AnimalImage
@@ -110,7 +114,29 @@ namespace ApiApp.Tests
             }
 
             // now can use the provided UploadBlobSASUrl to upload image
+            string blobContent = "This is how I upload an image";
+            CloudBlockBlob blob = new CloudBlockBlob(new Uri(animalReturned.UploadBlobSASUrl));
 
+            // Create operation: Upload a blob with the specified name to the container.
+            // If the blob does not exist, it will be created. If it does exist, it will be overwritten.
+            try
+            {
+                MemoryStream msWrite = new MemoryStream(Encoding.UTF8.GetBytes(blobContent));
+                msWrite.Position = 0;
+                using (msWrite)
+                {
+                    await blob.UploadFromStreamAsync(msWrite);
+                }
+
+                LogInfo($"Create operation succeeded for SAS {animalReturned.UploadBlobSASUrl}\n");
+            }
+            catch (StorageException e)
+            {
+                LogInfo($"Create operation failed for SAS {animalReturned.UploadBlobSASUrl} : {e.ToString()}\n");
+                throw;
+            }
+
+            // Get
             response = await client.GetAsync($"api/animalimages/{animalReturned.Id}");
             if (response.IsSuccessStatusCode)
             {
