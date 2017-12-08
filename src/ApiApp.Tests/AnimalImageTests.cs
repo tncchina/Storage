@@ -7,6 +7,7 @@ using System.Net;
 using ApiApp.Models;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace ApiApp.Tests
 {
@@ -15,14 +16,30 @@ namespace ApiApp.Tests
     {
         static HttpClient client = new HttpClient();
 
-        Action<string> LogInfo = Console.WriteLine;
+        static Action<string> LogInfo = Console.WriteLine;
 
         [ClassInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
-            client.BaseAddress = new Uri("http://apiapptest20171126015849.azurewebsites.net/");
+            string tenant = "fb280588-57d8-4416-9821-e337832bfa02";
+            string resource = "d90011f8-819f-4a37-b1c7-484b92ccee1d";
+            string clientId = "3195d3f6-a444-45cf-8981-6c4258faf75d";
+
+            AuthenticationContext authContext = new AuthenticationContext("https://login.microsoftonline.com/" + tenant);
+            AuthenticationResult result = null;
+            try
+            {
+                result = authContext.AcquireTokenAsync(resource, clientId, new Uri("http://ApiApp.Tests"), new PlatformParameters(PromptBehavior.Auto)).Result;
+            }
+            catch (Exception ex)
+            {
+                LogInfo(ex.ToString());
+            }
+
+            client.BaseAddress = new Uri("https://apiapptest20171126015849.azurewebsites.net/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
         }
 
 
@@ -33,7 +50,7 @@ namespace ApiApp.Tests
             HttpResponseMessage response = null;
             try
             {
-                response = await client.GetAsync("api/animalimages/1");
+                response = await client.GetAsync("api/animalimages/");
                 if (response.IsSuccessStatusCode)
                 {
                     content = await response.Content.ReadAsStringAsync();
