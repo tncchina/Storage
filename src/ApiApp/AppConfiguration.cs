@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+
+using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.Azure.Documents.Client;
 
 namespace ApiApp
 {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using ApiApp.Common;
 using ApiApp.Models;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Swashbuckle.Swagger.Annotations;
-using Microsoft.Azure.Documents.Client;
-using ApiApp.Common;
-using Microsoft.Azure.Documents;
 
 namespace ApiApp.Controllers
 {
@@ -54,7 +54,7 @@ namespace ApiApp.Controllers
             // Create a new container, if it does not exist
             container.CreateIfNotExists();
 
-            //TODO: validate input
+            // TODO: validate input
             animalImage.Id = Guid.NewGuid().ToString().ToLowerInvariant();
             animalImage.ImageName = animalImage.ImageName.ToLowerInvariant();
             animalImage.FileFormat = animalImage.FileFormat.ToLowerInvariant();
