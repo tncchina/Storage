@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiApp", "ApiApp\ApiApp.csproj", "{8884EB0C-16B3-4A59-BAAA-3D8E127499E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiApp.Tests", "ApiApp.Tests\ApiApp.Tests.csproj", "{67E09159-CED4-4693-B7B4-1805BCAC72D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchUploadClient", "BatchUploadCiient\BatchUploadClient.csproj", "{B038CF03-F1FC-43F9-90DE-5E26B4F3D105}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{67E09159-CED4-4693-B7B4-1805BCAC72D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67E09159-CED4-4693-B7B4-1805BCAC72D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67E09159-CED4-4693-B7B4-1805BCAC72D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B038CF03-F1FC-43F9-90DE-5E26B4F3D105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B038CF03-F1FC-43F9-90DE-5E26B4F3D105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B038CF03-F1FC-43F9-90DE-5E26B4F3D105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B038CF03-F1FC-43F9-90DE-5E26B4F3D105}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
