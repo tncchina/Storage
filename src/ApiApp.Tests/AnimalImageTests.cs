@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -154,6 +155,111 @@ namespace ApiApp.Tests
             Assert.AreEqual(animal.ImageName, animalReturned.ImageName);
             Assert.AreNotEqual(animal.FileFormat, animalReturned.FileFormat);
             Assert.AreEqual(animal.FileFormat.ToLowerInvariant(), animalReturned.FileFormat);
+        }
+
+        [TestMethod]
+        public void TestCsvMetadataParsing()
+        {
+            const string testData =
+@"原始文件编号,文件编号,文件格式,文件夹编号,相机编号,布设点位编号,相机安装日期,拍摄时间,工作天数,对象类别,物种名称,动物数量,性别,独立探测首张,备注
+IMAG0001,L-TJH15-V08A-0001,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,2017-12-01,19:00,1,工作人员,,,,1,设置相机
+IMAG0002,L-TJH15-V08A-0002,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员,,,,,
+IMAG0003,L-TJH15-V08A-0003,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员
+IMAG0004,L-TJH15-V08A-0004,AVI,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员,,,,,,,,,
+IMAG0025,L-TJH15-V08A-0005,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,2:12,2,兽类,猪獾,1,,1";
+
+            List<AnimalImage> expectedValues = new List<AnimalImage>(new[]
+            {
+                new AnimalImage
+                {
+                    OriginalFileId = "L-TJH15-V08A-0001",
+                    OriginalImageId = "IMAG0001",
+                    FileFormat = "JPG",
+                    OriginalFolderId = "L-TJH15-V08A",
+                    CameraId = "T0330",
+                    LocationId = "L-TJH15-V08A",
+                    CameraInstallationDate = new DateTime(2017, 12, 01),
+                    ShootingTime = DateTime.Parse("19:00"),
+                    WorkingDays = 1,
+                    Category = "工作人员",
+                    IndependentProbeFirst = "1",
+                    Notes = "设置相机"
+                },
+                new AnimalImage
+                {
+                    OriginalFileId = "L-TJH15-V08A-0002",
+                    OriginalImageId = "IMAG0002",
+                    FileFormat = "JPG",
+                    OriginalFolderId = "L-TJH15-V08A",
+                    CameraId = "T0330",
+                    LocationId = "L-TJH15-V08A",
+                    ShootingTime = DateTime.Parse("19:00"),
+                    WorkingDays = 1,
+                    Category = "工作人员"
+                },
+                new AnimalImage
+                {
+                    OriginalFileId = "L-TJH15-V08A-0003",
+                    OriginalImageId = "IMAG0003",
+                    FileFormat = "JPG",
+                    OriginalFolderId = "L-TJH15-V08A",
+                    CameraId = "T0330",
+                    LocationId = "L-TJH15-V08A",
+                    ShootingTime = DateTime.Parse("19:00"),
+                    WorkingDays = 1,
+                    Category = "工作人员"
+                },
+                new AnimalImage
+                {
+                    OriginalFileId = "L-TJH15-V08A-0004",
+                    OriginalImageId = "IMAG0004",
+                    FileFormat = "AVI",
+                    OriginalFolderId = "L-TJH15-V08A",
+                    CameraId = "T0330",
+                    LocationId = "L-TJH15-V08A",
+                    ShootingTime = DateTime.Parse("19:00"),
+                    WorkingDays = 1,
+                    Category = "工作人员"
+                },
+                new AnimalImage
+                {
+                    OriginalFileId = "L-TJH15-V08A-0005",
+                    OriginalImageId = "IMAG0025",
+                    FileFormat = "JPG",
+                    OriginalFolderId = "L-TJH15-V08A",
+                    CameraId = "T0330",
+                    LocationId = "L-TJH15-V08A",
+                    ShootingTime = DateTime.Parse("2:12"),
+                    WorkingDays = 2,
+                    Category = "兽类",
+                    SpecicesName = "猪獾",
+                    AnimalQuantity = 1,
+                    IndependentProbeFirst = "1"
+                }
+            });
+
+            List<AnimalImage> parsedData = AnimalImage.ReadFromCsv(testData);
+
+            Assert.AreEqual(expectedValues.Count, parsedData.Count);
+
+            for (int i = 0; i < expectedValues.Count; i++)
+            {
+                Assert.AreEqual(expectedValues[i].OriginalFileId, parsedData[i].OriginalFileId, $"Line {i}, field 'OriginalFileId'");
+                Assert.AreEqual(expectedValues[i].OriginalImageId, parsedData[i].OriginalImageId, $"Line {i}, field 'OriginalImageId'");
+                Assert.AreEqual(expectedValues[i].FileFormat, parsedData[i].FileFormat, $"Line {i}, field 'FileFormat'");
+                Assert.AreEqual(expectedValues[i].OriginalFolderId, parsedData[i].OriginalFolderId, $"Line {i}, field 'OriginalFolderId'");
+                Assert.AreEqual(expectedValues[i].CameraId, parsedData[i].CameraId, $"Line {i}, field 'CameraId'");
+                Assert.AreEqual(expectedValues[i].LocationId, parsedData[i].LocationId, $"Line {i}, field 'LocationId'");
+                Assert.AreEqual(expectedValues[i].CameraInstallationDate, parsedData[i].CameraInstallationDate, $"Line {i}, field 'CameraInstallationDate'");
+                Assert.AreEqual(expectedValues[i].ShootingTime, parsedData[i].ShootingTime, $"Line {i}, field 'ShootingTime'");
+                Assert.AreEqual(expectedValues[i].WorkingDays, parsedData[i].WorkingDays, $"Line {i}, field 'WorkingDays'");
+                Assert.AreEqual(expectedValues[i].Category, parsedData[i].Category, $"Line {i}, field 'Category'");
+                Assert.AreEqual(expectedValues[i].SpecicesName, parsedData[i].SpecicesName, $"Line {i}, field 'SpecicesName'");
+                Assert.AreEqual(expectedValues[i].AnimalQuantity, parsedData[i].AnimalQuantity, $"Line {i}, field 'AnimalQuantity'");
+                Assert.AreEqual(expectedValues[i].Sex, parsedData[i].Sex, $"Line {i}, field 'Sex'");
+                Assert.AreEqual(expectedValues[i].IndependentProbeFirst, parsedData[i].IndependentProbeFirst, $"Line {i}, field 'IndependentProbeFirst'");
+                Assert.AreEqual(expectedValues[i].Notes, parsedData[i].Notes, $"Line {i}, field 'Notes'");
+            }
         }
     }
 }
