@@ -14,5 +14,4 @@ namespace ApiApp.Common
             return Task.FromResult(response);
         }
     }
-
 }

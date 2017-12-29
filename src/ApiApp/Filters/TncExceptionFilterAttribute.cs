@@ -5,7 +5,6 @@ using ApiApp.Common;
 using ApiApp.Models;
 using Newtonsoft.Json;
 
-
 namespace ApiApp.Filters
 {
     public class TncExceptionFilterAttribute : ExceptionFilterAttribute

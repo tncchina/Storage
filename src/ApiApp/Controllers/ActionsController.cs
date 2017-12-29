@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using ApiApp.Common;
 using ApiApp.Filters;
 using ApiApp.Models;
+using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
 
 namespace ApiApp.Controllers
@@ -57,6 +59,12 @@ namespace ApiApp.Controllers
                     };
                 }
 
+                MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.ImageName), "ImageName is not present");
+                MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.OriginalFileId), "OriginalFileId is not present");
+                MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.OriginalFolderId), "OriginalFolderId is not present");
+                MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.OriginalImageId), "OriginalImageId is not present");
+                MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.FileFormat), "FileFormat is not present");
+
                 var operation = new OperationResult
                 {
                     CreationTime = DateTime.UtcNow,
@@ -89,6 +97,21 @@ namespace ApiApp.Controllers
                 {
                     ErrorCode = "UnexpectedException",
                     ErrorMessage = ex.ToString()
+                };
+            }
+        }
+
+        private static void MetadataValidate(List<AnimalImage> animalImages, Func<AnimalImage, bool> validator, string message)
+        {
+            AnimalImage invalidImage = animalImages.FirstOrDefault(validator);
+
+            if (invalidImage != null)
+            {
+                throw new TncException()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ErrorCode = ErrorCode.BadCSVMetadata,
+                    ErrorMessage = "Message: " + message + " Image: " + JsonConvert.SerializeObject(invalidImage)
                 };
             }
         }
