@@ -1,8 +1,11 @@
 ﻿using System;
 
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Client.TransientFaultHandling;
+using Microsoft.Azure.Documents.Client.TransientFaultHandling.Strategies;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using Microsoft.WindowsAzure.Storage;
 
 namespace ApiApp
@@ -26,16 +29,17 @@ namespace ApiApp
         private static readonly CloudStorageAccount StorageAccount = CloudStorageAccount.Parse(
             KeyVaultClient.GetSecretAsync(StorageCSKeyVaultLocation).GetAwaiter().GetResult().Value);
 
-        private static readonly DocumentClient DBClient = new DocumentClient(
+        private static readonly IReliableReadWriteDocumentClient DBClient = new DocumentClient(
             new Uri(KeyVaultClient.GetSecretAsync(DBUrlKeyVaultLocation).GetAwaiter().GetResult().Value),
-            KeyVaultClient.GetSecretAsync(DBKeyKeyVaultLocation).GetAwaiter().GetResult().Value);
+            KeyVaultClient.GetSecretAsync(DBKeyKeyVaultLocation).GetAwaiter().GetResult().Value)
+            .AsReliable(new DocumentDbRetryStrategy(RetryStrategy.DefaultExponential));
 
         private static readonly Uri AICollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, AnimalImageCollectionName);
         private static readonly Uri AIOperationCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, OperationResultCollectionName);
 
         public CloudStorageAccount BlobStorageAccount => StorageAccount;
 
-        public DocumentClient CosmosDBClient => DBClient;
+        public IReliableReadWriteDocumentClient CosmosDBClient => DBClient;
 
         public Uri AnimalImageCollectionUri => AICollectionUri;
 
