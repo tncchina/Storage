@@ -5,5 +5,7 @@
         public string BatchTag { get; set; }
 
         public string BatchDescription { get; set; }
+
+        public string CSVMetadata { get; set; }
     }
 }

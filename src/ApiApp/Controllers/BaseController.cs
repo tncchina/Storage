@@ -1,7 +1,5 @@
-﻿using System.Net;
-using System.Web.Http;
-using ApiApp.Models;
-using Swashbuckle.Swagger.Annotations;
+﻿using System.Web.Http;
+using ApiApp.Common;
 
 namespace ApiApp.Controllers
 {
@@ -10,5 +8,10 @@ namespace ApiApp.Controllers
         private AppConfiguration appConfiguration = new AppConfiguration();
 
         protected AppConfiguration AppConfiguration => this.appConfiguration;
+
+        protected IHttpActionResult Accepted()
+        {
+            return new AcceptedHttpResult();
+        }
     }
 }

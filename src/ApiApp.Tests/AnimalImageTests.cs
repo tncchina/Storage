@@ -22,6 +22,14 @@ namespace ApiApp.Tests
 
         static Action<string> LogInfo = Console.WriteLine;
 
+        const string ValidCsvMetadata =
+@"原始文件编号,文件编号,文件格式,文件夹编号,相机编号,布设点位编号,相机安装日期,拍摄时间,工作天数,对象类别,物种名称,动物数量,性别,独立探测首张,备注
+IMAG0001,L-TJH15-V08A-0001,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,2017-12-01,19:00,1,工作人员,,,,1,设置相机
+IMAG0002,L-TJH15-V08A-0002,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员,,,,,
+IMAG0003,L-TJH15-V08A-0003,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员
+IMAG0004,L-TJH15-V08A-0004,AVI,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员,,,,,,,,,
+IMAG0025,L-TJH15-V08A-0005,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,2:12,2,兽类,猪獾,1,,1";
+
         [ClassInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
@@ -160,14 +168,6 @@ namespace ApiApp.Tests
         [TestMethod]
         public void TestCsvMetadataParsing()
         {
-            const string testData =
-@"原始文件编号,文件编号,文件格式,文件夹编号,相机编号,布设点位编号,相机安装日期,拍摄时间,工作天数,对象类别,物种名称,动物数量,性别,独立探测首张,备注
-IMAG0001,L-TJH15-V08A-0001,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,2017-12-01,19:00,1,工作人员,,,,1,设置相机
-IMAG0002,L-TJH15-V08A-0002,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员,,,,,
-IMAG0003,L-TJH15-V08A-0003,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员
-IMAG0004,L-TJH15-V08A-0004,AVI,L-TJH15-V08A,T0330,L-TJH15-V08A,,19:00,1,工作人员,,,,,,,,,
-IMAG0025,L-TJH15-V08A-0005,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,2:12,2,兽类,猪獾,1,,1";
-
             List<AnimalImage> expectedValues = new List<AnimalImage>(new[]
             {
                 new AnimalImage
@@ -238,7 +238,7 @@ IMAG0025,L-TJH15-V08A-0005,JPG,L-TJH15-V08A,T0330,L-TJH15-V08A,,2:12,2,兽类,�
                 }
             });
 
-            List<AnimalImage> parsedData = AnimalImage.ReadFromCsv(testData);
+            List<AnimalImage> parsedData = AnimalImage.ReadFromCsv(ValidCsvMetadata);
 
             Assert.AreEqual(expectedValues.Count, parsedData.Count);
 

@@ -14,6 +14,7 @@ namespace ApiApp
         private const string DBUrlKeyVaultLocation = "https://tnckv4test.vault.azure.net/secrets/dbendpointurl";
         private const string DBKeyKeyVaultLocation = "https://tnckv4test.vault.azure.net/secrets/dbkey";
         private const string DatabaseName = "goldenmonkey";
+        private const string OperationResultCollectionName = "operationresults";
         private const string AnimalImageCollectionName = "animalimages";
         private const string AnimalImageContainerName = "animalimages";
 
@@ -30,6 +31,7 @@ namespace ApiApp
             KeyVaultClient.GetSecretAsync(DBKeyKeyVaultLocation).GetAwaiter().GetResult().Value);
 
         private static readonly Uri AICollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, AnimalImageCollectionName);
+        private static readonly Uri AIOperationCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, OperationResultCollectionName);
 
         public CloudStorageAccount BlobStorageAccount => StorageAccount;
 
@@ -40,6 +42,10 @@ namespace ApiApp
         public string AnimalImageContainer => AnimalImageContainerName;
 
         public string AnimalImageCollectionId => AnimalImageCollectionName;
+
+        public Uri OperationResultCollectionUri => AIOperationCollectionUri;
+
+        public string OperationResultCollectionId => OperationResultCollectionName;
 
         public string DatabaseId => DatabaseName;
     }

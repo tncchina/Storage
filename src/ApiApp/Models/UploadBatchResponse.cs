@@ -1,9 +1,7 @@
 ﻿namespace ApiApp.Models
 {
-    public class UploadBatchResponse
+    public class UploadBatchResponse : IModelResult
     {
-        public string ContainerUrl { get; set; }
-
-        public string BatchTag { get; set; }
+        public AnimalImage[] Animals { get; set; }
     }
 }

@@ -169,14 +169,30 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="AppConfiguration.cs" />
+    <Compile Include="Common\AcceptedHttpResult.cs" />
+    <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\ErrorCode.cs" />
+    <Compile Include="Common\ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Common\OperationStage.cs" />
+    <Compile Include="Common\TncException.cs" />
+    <Compile Include="Filters\CustomHeaderFilterAttribute.cs" />
+    <Compile Include="Filters\TncExceptionFilterAttribute.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Controllers\ActionsController.cs" />
     <Compile Include="Controllers\AnimalImagesController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\OperationResultsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AnimalImage.cs" />
+    <Compile Include="Models\IModelResult.cs" />
+    <Compile Include="Models\OperationStatus.cs" />
+    <Compile Include="Models\OperationResult.cs" />
     <Compile Include="Models\UploadBatch.cs" />
     <Compile Include="Models\UploadBatchRequest.cs" />
     <Compile Include="Models\UploadBatchResponse.cs" />
@@ -208,6 +224,12 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Common\ErrorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -219,7 +241,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63513</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
