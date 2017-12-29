@@ -81,7 +81,7 @@ namespace ApiApp.Models
 
         public DateTime? CameraInstallationDate { get; set; }
 
-        public DateTime ShootingTime { get; set; }
+        public string ShootingTime { get; set; }
 
         public int WorkingDays { get; set; }
 
@@ -126,7 +126,7 @@ namespace ApiApp.Models
                         CameraId = SafeGetElement(fields, fieldMapping[FieldNames.CameraId]),
                         LocationId = SafeGetElement(fields, fieldMapping[FieldNames.LocationId]),
                         CameraInstallationDate = SafeGetDateTimeElement(fields, fieldMapping[FieldNames.CameraInstallationDate]),
-                        ShootingTime = DateTime.Parse(SafeGetElement(fields, fieldMapping[FieldNames.ShootingTime])),
+                        ShootingTime = SafeGetElement(fields, fieldMapping[FieldNames.ShootingTime]),
                         WorkingDays = int.Parse(SafeGetElement(fields, fieldMapping[FieldNames.WorkingDays])),
                         Category = SafeGetElement(fields, fieldMapping[FieldNames.Category]),
                         SpecicesName = SafeGetElement(fields, fieldMapping[FieldNames.SpecicesName]),
