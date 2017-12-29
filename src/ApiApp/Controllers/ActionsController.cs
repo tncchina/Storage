@@ -59,7 +59,6 @@ namespace ApiApp.Controllers
                     };
                 }
 
-                MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.ImageName), "ImageName is not present");
                 MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.OriginalFileId), "OriginalFileId is not present");
                 MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.OriginalFolderId), "OriginalFolderId is not present");
                 MetadataValidate(animalImages, a => string.IsNullOrWhiteSpace(a.OriginalImageId), "OriginalImageId is not present");
