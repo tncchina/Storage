@@ -103,6 +103,19 @@ namespace ApiApp.Tests
                 });
         }
 
+        [TestMethod]
+        public async Task GetNonExistentOperationStatus()
+        {
+            await GetOperationStatusCore(
+                "Non-existent",
+                (response, content) =>
+                {
+                    Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+                    Assert.IsFalse(string.IsNullOrEmpty(content));
+                    return true;
+                });
+        }
+
         private static async Task UploadBatchTestCore(UploadBatchRequest request, Func<HttpResponseMessage, string, bool> validator)
         {
             string content = "";
@@ -113,6 +126,35 @@ namespace ApiApp.Tests
                 var requestContent = new StringContent(stringContent, Encoding.UTF8, "application/json");
 
                 response = await client.PostAsync("api/actions/uploadbatch", requestContent);
+                try
+                {
+                    content = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                }
+
+                Assert.IsTrue(validator(response, content));
+            }
+            catch (Exception e)
+            {
+                LogInfo(e.Message);
+                throw;
+            }
+            finally
+            {
+                LogInfo($"received response status {response.StatusCode}, response content: {content}");
+            }
+        }
+
+        private static async Task GetOperationStatusCore(string operationId, Func<HttpResponseMessage, string, bool> validator)
+        {
+            HttpResponseMessage response = null;
+            string content = "";
+            try
+            {
+                response = await client.GetAsync(client.BaseAddress + "api/operationresults/" + operationId);
+
                 try
                 {
                     content = await response.Content.ReadAsStringAsync();

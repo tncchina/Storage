@@ -20,6 +20,7 @@ namespace ApiApp
         private const string OperationResultCollectionName = "operationresults";
         private const string AnimalImageCollectionName = "animalimages";
         private const string AnimalImageContainerName = "animalimages";
+        private const string AnimalImageMetadataContainerName = "metadata";
 
         private static readonly AzureServiceTokenProvider AzureServiceTokenProvider = new AzureServiceTokenProvider();
 
@@ -45,6 +46,8 @@ namespace ApiApp
 
         public string AnimalImageContainer => AnimalImageContainerName;
 
+        public string AnimalImageMetadataContainer => AnimalImageMetadataContainerName;
+
         public string AnimalImageCollectionId => AnimalImageCollectionName;
 
         public Uri OperationResultCollectionUri => AIOperationCollectionUri;
@@ -52,5 +55,9 @@ namespace ApiApp
         public string OperationResultCollectionId => OperationResultCollectionName;
 
         public string DatabaseId => DatabaseName;
+
+        public int MaxCosmosDBItemCount => 100;
+
+        public int BatchUploadSasExpirationHours => 24 * 7;
     }
 }

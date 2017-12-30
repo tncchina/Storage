@@ -7,6 +7,7 @@ using System.Web.Http;
 using ApiApp.Common;
 using ApiApp.Filters;
 using ApiApp.Models;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
 
@@ -67,13 +68,34 @@ namespace ApiApp.Controllers
                 var operation = new OperationResult
                 {
                     CreationTime = DateTime.UtcNow,
-                    Id = Guid.NewGuid().ToString(),
-                    Status = new OperationStatus { Code = OperationStage.New }
+                    Id = Guid.NewGuid().ToString().ToLowerInvariant(),
+                    Status = new OperationStatus { Code = OperationStage.InProgress }
                 };
+
+                animalImages.ForEach(a =>
+                {
+                    a.UploadBatchId = operation.Id;
+                    a.Id = Guid.NewGuid().ToString().ToLowerInvariant();
+                    a.FileFormat = a.FileFormat.ToLowerInvariant();
+                    a.ImageName = a.OriginalFileId.ToLowerInvariant();
+                    a.ImageBlob = a.UploadBatchId + "/" + a.OriginalFolderId.ToLowerInvariant() + "/" + a.ImageName + "." + a.FileFormat;
+                });
+
+                CloudBlobClient blobClient = this.AppConfiguration.BlobStorageAccount.CreateCloudBlobClient();
+                CloudBlobContainer container = blobClient.GetContainerReference(this.AppConfiguration.AnimalImageMetadataContainer);
+
+                // Create a new container, if it does not exist
+                container.CreateIfNotExists();
+
+                CloudBlockBlob blockblob = container.GetBlockBlobReference(operation.Id);
+
+                await blockblob.UploadTextAsync(JsonConvert.SerializeObject(animalImages));
 
                 await this.AppConfiguration.CosmosDBClient.UpsertDocumentAsync(
                     this.AppConfiguration.OperationResultCollectionUri,
                     operation);
+
+                var t = Task.Run(() => BatchProcessor.ProcessUploadBatch(this.AppConfiguration, operation.Id));
 
                 Uri originalUri = this.Request.RequestUri;
                 UriBuilder uriBuilder = new UriBuilder(originalUri.Scheme, originalUri.Host, originalUri.Port, $"/api/operationresults/{operation.Id}");

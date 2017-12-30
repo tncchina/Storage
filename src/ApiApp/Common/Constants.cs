@@ -14,5 +14,7 @@ namespace ApiApp.Common
         public const string LocationHeader = "Location";
 
         public const string RetryAfterHeader = "Retry-After";
+
+        public const string SkipToken = "$skiptoken";
     }
 }

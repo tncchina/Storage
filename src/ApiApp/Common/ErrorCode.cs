@@ -8,5 +8,6 @@ namespace ApiApp.Common
         public const string LongOperationFailed = "LongOperationFailed";
         public const string ProperyCannotBeEmpty = "ProperyCannotBeEmpty";
         public const string BadCSVMetadata = "BadCSVMetadata";
+        public const string OperationNotFound = "OperationNotFound";
     }
 }

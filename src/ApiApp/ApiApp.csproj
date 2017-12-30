@@ -185,6 +185,7 @@
     </Compile>
     <Compile Include="Common\OperationStage.cs" />
     <Compile Include="Common\TncException.cs" />
+    <Compile Include="Controllers\BatchProcessor.cs" />
     <Compile Include="Filters\CustomHeaderFilterAttribute.cs" />
     <Compile Include="Filters\TncExceptionFilterAttribute.cs" />
     <Compile Include="Common\Utils.cs" />
